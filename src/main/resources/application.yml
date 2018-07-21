@@ -1,0 +1,45 @@
+project:
+  name: Verspaetung-nvaigation
+  version: 1.0.0
+  description: In the fictional city of Verspaetung, public transport is notoriously unreliable. To tackle the problem, the city council has decided to make the public transport timetable and delay information public, opening up opportunities for innovative use cases.
+info:
+  build:
+    artifact: ${project.artifactId}
+    name: ${project.name}
+    description: ${project.description}
+    version: ${project.version}
+
+server.port: 8081
+
+management.server.port: 9001
+
+management.security.enabled : false
+
+
+spring:
+  profiles: test
+  h2:
+    console:
+      enabled: true #TODO: take care to ensure that spring.h2.console.enabled is not set to true in production see https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-sql.html#boot-features-sql-h2-console
+      path: /h2-dashboard
+
+
+error.whitelabel.enabled: false
+
+spring.jpa:
+    hibernate.ddl-auto: create-drop
+  
+logging:
+  file: log.log
+  org.hibernate: INFO
+
+logging.level.org.springframework.web: DEBUG
+logging.level.org.hibernate: ERROR
+
+
+
+spring.datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:city_navigation;MODE=PostgreSQL;DB_CLOSE_ON_EXIT=FALSE  # to disable automatic closing at VM shutdown
+    username: admin
+    password: admin
