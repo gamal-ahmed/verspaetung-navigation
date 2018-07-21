@@ -49,6 +49,35 @@ The Verspaetung public transport information is comprised of 4 CSV files:
 DataBase Intializers ```DelayInitializer ,LinesInitializer,StopsInitializer,TimesInitializer``` will load data from csv files to the database 
 during the application startup 
 
+### Secuirty 
+default authentication and  authorization are disabled for HTTP methods ```POST ```, ```GET ``` to make it easir for testing .
+
+Note : it is simple and easy to define a user name and password with some roles in the application.proparties file or in the ```configure() ``` function below .
+
+```
+  @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().requireCsrfProtectionMatcher(new RequestMatcher() {
+            private Pattern allowedMethods = Pattern.compile("^(GET|POST)$");
+            private RegexRequestMatcher apiMatcher = new RegexRequestMatcher("/v[0-9]*/.*", null);
+
+            @Override
+            public boolean matches(HttpServletRequest request) {
+                // No CSRF due to allowedMethod
+                if (allowedMethods.matcher(request.getMethod()).matches())
+                    return false;
+
+                // No CSRF due to api call
+                if (apiMatcher.matches(request))
+                    return false;
+
+                // CSRF for everything else that is not an API call or an allowedMethod
+                return true;
+            }
+        });
+        http.authorizeRequests().antMatchers("/").permitAll();
+```
+
 ### Returns the vehicles for a given time and coordinates [Paginated List]
 
 ```
