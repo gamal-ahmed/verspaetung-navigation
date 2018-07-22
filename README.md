@@ -10,7 +10,7 @@ As a side note, the city of Verspaetung has been built on a strict grid - all lo
 
 Small Microservice based on :
   * JDK 1.8
-  * Spring Boot 
+  * Spring Boot 2.0 
   * JPA
   * h2database
   * Tomcat 8 embedded (No Tomcat  installation is necessary)
@@ -20,7 +20,7 @@ Small Microservice based on :
 Concepts 
   * Writing a RESTful service using annotation supports both XML and JSON request / response;
   * Demonstrates MockMVC test framework with associated libraries
-  * Build different layers to seperate the application into parts bussines logic , the data base reproistories and endpoint
+  * Build different layers to separate the application into parts bussines logic , the data base reproistories and endpoint
   
 ## How to Run 
 
@@ -30,13 +30,48 @@ This application is packaged as a war which has Tomcat 8 embedded.
 * Run ```mvn clean package```
 * Run one of these  two commands:
 ```
-        java -jar -Dspring.profiles.active=test target/Verspaetung-nvaigation-1.0.0.war
+        java -jar -Dspring.profiles.active=test target/verspaetung-nvaigation-1.0.0.jar
 or
         mvn spring-boot:run -Drun.arguments="spring.profiles.active=test"
 ```
 * Check the stdout or log.log file to make sure no exceptions are thrown
 
+## Run Using Docker
 
+I added Sptoify maven plugin for building and pushing Docker images. 
+
+``` 
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.3.6</version>
+                <configuration>
+                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                    <contextDirectory>${project.basedir}</contextDirectory>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+  ```
+  
+Steps to Build and run the docker image: 
+
+- Run inside the project directory `mvn install dockerfile:build`
+- Start the docker container `docker run -p 8081:8081 -t mobimeo/verspaetung-nvaigation:1.0.0`
+- Check that the container is up and runding using `docker ps` 
+- Use the restfull apis
+ 
 ## Data
 
 The Verspaetung public transport information is comprised of 4 CSV files:
@@ -47,8 +82,20 @@ The Verspaetung public transport information is comprised of 4 CSV files:
 - `resources/data/delays.csv` - the delays for each line. This data is static and assumed to be valid for any time of day.
 
 DataBase Intializers ```DelayInitializer ,LinesInitializer,StopsInitializer,TimesInitializer``` will load data from csv files to the database 
-during the application startup 
+during the application startup As shown below from logs :
 
+```
+2018-07-22 21:36:30.740  INFO 1 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2018-07-22 21:36:31.272  INFO 1 --- [           main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+2018-07-22 21:36:31.483  INFO 1 --- [           main] c.m.c.dao.intializers.LinesInitializer   : Importing 3 Lines into DataBase…
+2018-07-22 21:36:31.555  INFO 1 --- [           main] c.m.c.dao.intializers.LinesInitializer   : Successfully imported 3 Lines.
+2018-07-22 21:36:31.581  INFO 1 --- [           main] c.m.c.dao.intializers.TimesInitializer   : Importing 15 Times into DataBase…
+2018-07-22 21:36:31.599  INFO 1 --- [           main] c.m.c.dao.intializers.TimesInitializer   : Successfully imported 15 Times.
+2018-07-22 21:36:31.741  INFO 1 --- [           main] c.m.c.dao.intializers.DelayInitializer   : Importing 3 Delays into DataBase…
+2018-07-22 21:36:31.747  INFO 1 --- [           main] c.m.c.dao.intializers.DelayInitializer   : Successfully imported 3 Delays.
+2018-07-22 21:36:31.942  INFO 1 --- [           main] c.m.c.dao.intializers.StopsInitializer   : Importing 12 Stops into DataBase…
+2018-07-22 21:36:31.953  INFO 1 --- [           main] c.m.c.dao.intializers.StopsInitializer   : Successfully imported 12 Stops.
+```
 ### Secuirty 
 default authentication and  authorization are disabled for HTTP methods ```POST ```, ```GET ``` to make it easir for testing .
 

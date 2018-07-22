@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mobimeo</groupId>
-    <artifactId>Verspaetung-nvaigation</artifactId>
+    <artifactId>verspaetung-nvaigation</artifactId>
     <version>1.0.0</version>
-    <packaging>war</packaging>
-    <description>web API to expose the Verspaetung public transport information using Spring Boot, in-memory database,
+    <description>web API to expose the verspaetung public transport information using Spring Boot, in-memory database,
         embedded Tomcat, Swagger, JsonPath, Hamcrest and MockMVC
     </description>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -19,6 +19,8 @@
 
     <properties>
         <start-class>com.mobimeo.citynavigation.Application</start-class>
+        <docker.image.prefix>mobimeo</docker.image.prefix>
+
     </properties>
 
     <dependencies>
@@ -120,6 +122,7 @@
         </dependency>
     </dependencies>
 
+
     <build>
         <resources>
             <resource>
@@ -129,22 +132,32 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <!-- Spring boot support -->
-            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.3.6</version>
                 <configuration>
-                    <addResources>false</addResources>
+                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
+                    <contextDirectory>${project.basedir}</contextDirectory>
+                    <tag>${project.version}</tag>
+                    <buildArgs>
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
