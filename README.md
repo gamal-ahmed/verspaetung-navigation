@@ -21,7 +21,7 @@ Concepts
   * Writing a RESTful service using annotation supports both XML and JSON request / response;
   * Demonstrates MockMVC test framework with associated libraries
   * Build different layers to separate the application into parts bussines logic , the data base reproistories and endpoint
-  
+## Archtiture overview
 ## How to Run 
 
 This application is packaged as a war which has Tomcat 8 embedded.
