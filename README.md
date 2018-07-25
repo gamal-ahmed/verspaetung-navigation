@@ -25,7 +25,7 @@ Concepts
 ![](https://raw.githubusercontent.com/gamal-ahmed/verspaetung-navigation/master/Archititure%20Diagram.png)
 ## How to Run 
 
-This application is packaged as a war which has Tomcat 8 embedded.
+This application is packaged as a jar which has Tomcat 8 embedded.
 
 * Clone this repository 
 * Run ```mvn clean package```
