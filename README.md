@@ -97,6 +97,8 @@ during the application startup As shown below from logs :
 2018-07-22 21:36:31.942  INFO 1 --- [           main] c.m.c.dao.intializers.StopsInitializer   : Importing 12 Stops into DataBase…
 2018-07-22 21:36:31.953  INFO 1 --- [           main] c.m.c.dao.intializers.StopsInitializer   : Successfully imported 12 Stops.
 ```
+### Swagger 2 API docs
+```http://localhost:8081/swagger-ui.html```
 ### Secuirty 
 default authentication and  authorization are disabled for HTTP methods ```POST ```, ```GET ``` to make it easir for testing .
 
